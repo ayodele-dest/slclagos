@@ -1,0 +1,7 @@
+node_modules/
+dist/
+dist-link-hub/
+.vercel/
+.env
+.env.*
+*.log
