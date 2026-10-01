@@ -41,6 +41,9 @@
 
 .connect-form input, .connect-form textarea, .connect-form select { transition: border-color .2s ease,background-color .2s ease,box-shadow .2s ease; }
 .connect-form input:focus, .connect-form textarea:focus, .connect-form select:focus { border-color:#f97316; background-color:rgba(255,255,255,.075); box-shadow:0 0 0 3px rgba(249,115,22,.13); outline:none; }
+.form-trap { position:absolute!important; left:-10000px!important; width:1px!important; height:1px!important; overflow:hidden!important; }
+.form-error { margin:0; color:#fca5a5; font:500 13px/1.45 Poppins,sans-serif; }
+.connect-form button:disabled, .sheet form button:disabled { cursor:wait; opacity:.65; transform:none!important; }
 
 /* Trybe and Connect end at the cropped footer lockup, exactly like Home. */
 .page-view:has(.figma-subpage) {

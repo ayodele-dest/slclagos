@@ -12,17 +12,24 @@ import './polish.css';
 
 const Arrow=()=> <span className="arrow" aria-hidden="true">›</span>;
 
+async function sendContact(form,extra={}){
+ const payload={...Object.fromEntries(new FormData(form).entries()),...extra};
+ const response=await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+ const result=await response.json().catch(()=>({}));
+ if(!response.ok)throw new Error(result.error||'We could not send your message. Please try again.');
+}
+
 function ContactSheet({open,onClose,initial='General enquiry'}){
-  const [reason,setReason]=useState(initial); const [sent,setSent]=useState(false);
-  useEffect(()=>setReason(initial),[initial]);
+  const [reason,setReason]=useState(initial),[sent,setSent]=useState(false),[sending,setSending]=useState(false),[error,setError]=useState(''),[startedAt,setStartedAt]=useState(Date.now);
+  useEffect(()=>{setReason(initial);setSent(false);setError('');setStartedAt(Date.now())},[initial,open]);
   const reasons=["I’m new here",'I want to join a Trybe','I need prayer','I have a testimony','I want to serve','General enquiry'];
-  function submit(e){e.preventDefault();setSent(true);/* Future Google Apps Script POST belongs here. */}
+  async function submit(e){e.preventDefault();const form=e.currentTarget;setSending(true);setError('');try{await sendContact(form,{reason,startedAt});form.reset();setSent(true)}catch(err){setError(err.message)}finally{setSending(false)}}
   if(!open)return null;
   return <div className="sheet-wrap" role="dialog" aria-modal="true" aria-label="Talk to SLC Lagos" onMouseDown={e=>e.target===e.currentTarget&&onClose()}>
     <section className="sheet"><button className="handle" onClick={onClose} aria-label="Close form"/><div className="sheet-head"><div><span className="kicker">WE’RE HERE</span><h2>How can we help?</h2></div><button className="close" onClick={onClose}>×</button></div>
     {sent?<div className="success"><b>Thank you — we’ve got it.</b><p>Someone from the SLC Lagos family will reach out soon.</p><button onClick={onClose}>Done</button></div>:<>
       <div className="chips">{reasons.map(r=><button key={r} className={reason===r?'active':''} onClick={()=>setReason(r)}>{r}</button>)}</div>
-      <form onSubmit={submit}><label>Full Name<input required name="name" autoComplete="name"/></label><div className="form-row"><label>Email<input required type="email" name="email"/></label><label>Phone<input required type="tel" name="phone"/></label></div><label>Message<textarea required name="message" rows="3" placeholder={`Tell us a little about ${reason.toLowerCase()}…`}/></label><button className="submit">Send message</button></form></>}
+      <form onSubmit={submit}><div className="form-trap" aria-hidden="true"><label>Company<input name="company" tabIndex="-1" autoComplete="off"/></label></div><label>Full Name<input required name="name" autoComplete="name" maxLength="100"/></label><div className="form-row"><label>Email<input required type="email" name="email" autoComplete="email" maxLength="254"/></label><label>Phone<input required type="tel" name="phone" autoComplete="tel" maxLength="40"/></label></div><label>Message<textarea required name="message" rows="3" minLength="10" maxLength="3000" placeholder={`Tell us a little about ${reason.toLowerCase()}…`}/></label>{error&&<p className="form-error" role="alert">{error}</p>}<button className="submit" disabled={sending}>{sending?'Sending…':'Send message'}</button></form></>}
     </section></div>
 }
 
@@ -61,16 +68,18 @@ function Home({go}){return <div className="figma-home">
  </div>}
 
 function ConnectForm(){
- const [sent,setSent]=useState(false);
- function submit(e){e.preventDefault();setSent(true);/* Future Google Apps Script POST belongs here. */}
- if(sent)return <div className="content-card form-success" role="status"><span>Message sent</span><h2>Thank you for reaching out.</h2><p>Someone from the SLC Lagos family will get back to you soon.</p><button className="page-action full" onClick={()=>setSent(false)}>Send another message</button></div>;
+ const [sent,setSent]=useState(false),[sending,setSending]=useState(false),[error,setError]=useState(''),[startedAt,setStartedAt]=useState(Date.now);
+ async function submit(e){e.preventDefault();const form=e.currentTarget;setSending(true);setError('');try{await sendContact(form,{startedAt});form.reset();setSent(true)}catch(err){setError(err.message)}finally{setSending(false)}}
+ if(sent)return <div className="content-card form-success" role="status"><span>Message sent</span><h2>Thank you for reaching out.</h2><p>Someone from the SLC Lagos family will get back to you soon.</p><button className="page-action full" onClick={()=>{setSent(false);setStartedAt(Date.now())}}>Send another message</button></div>;
  return <form className="connect-form" onSubmit={submit}>
+  <div className="form-trap" aria-hidden="true"><label>Company<input name="company" tabIndex="-1" autoComplete="off"/></label></div>
   <label>What can we help with?<select name="reason" defaultValue="General enquiry"><option>I’m new here</option><option>I want to join a Trybe</option><option>I need prayer</option><option>I have a testimony</option><option>I want to serve</option><option>General enquiry</option></select></label>
-  <label>Full name<input required name="name" autoComplete="name"/></label>
-  <label>Email address<input required type="email" name="email" autoComplete="email"/></label>
-  <label>Phone number<input required type="tel" name="phone" autoComplete="tel"/></label>
-  <label>Message<textarea required name="message" rows="4" placeholder="Tell us what’s on your heart…"/></label>
-  <button className="page-action full" type="submit">Send message</button>
+  <label>Full name<input required name="name" autoComplete="name" maxLength="100"/></label>
+  <label>Email address<input required type="email" name="email" autoComplete="email" maxLength="254"/></label>
+  <label>Phone number<input required type="tel" name="phone" autoComplete="tel" maxLength="40"/></label>
+  <label>Message<textarea required name="message" rows="4" minLength="10" maxLength="3000" placeholder="Tell us what’s on your heart…"/></label>
+  {error&&<p className="form-error" role="alert">{error}</p>}
+  <button className="page-action full" type="submit" disabled={sending}>{sending?'Sending…':'Send message'}</button>
  </form>
 }
 
