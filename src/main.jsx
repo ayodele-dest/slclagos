@@ -36,15 +36,17 @@ function ContactSheet({open,onClose,initial='General enquiry'}){
 const routes={watch:'Messages',visit:'Plan your visit',events:'Events',trybe:'Find your Trybe',groups:'Connect Groups',connect:'Connect',give:'Give'};
 
 function App(){
- const getRoute=()=>location.hash.replace('#/','')||'home';
+ const getRoute=()=>location.hash.replace(/^#\/?/,'')||location.pathname.replace(/^\/+|\/+$/g,'')||'home';
  const [route,setRoute]=useState(getRoute),[sheet,setSheet]=useState(false),[reason,setReason]=useState('General enquiry'),[loading,setLoading]=useState(true);
  useEffect(()=>{
+  const legacyRoute=location.hash.replace(/^#\/?/,'');
+  if(legacyRoute)history.replaceState(null,'',legacyRoute==='home'?'/':`/${legacyRoute}`);
   const first=setTimeout(()=>setLoading(false),850);
   const sync=()=>{setLoading(true);setRoute(getRoute());scrollTo(0,0);setTimeout(()=>setLoading(false),520)};
-  addEventListener('hashchange',sync);
-  return()=>{clearTimeout(first);removeEventListener('hashchange',sync)};
+  addEventListener('popstate',sync);
+  return()=>{clearTimeout(first);removeEventListener('popstate',sync)};
  },[]);
- const go=r=>{location.hash=r==='home'?'':'/'+r};
+ const go=r=>{const path=r==='home'?'/':`/${r}`;if(location.pathname!==path)history.pushState(null,'',path);setLoading(true);setRoute(r);scrollTo(0,0);setTimeout(()=>setLoading(false),520)};
  const open=(r='General enquiry')=>{setReason(r);setSheet(true)};
  return <><div className={`site-loader${loading?' is-visible':''}`} role="status" aria-live="polite" aria-label="Loading SLC Lagos"><div><img src="/logo-mark-exact.svg" alt=""/><strong>SLC Lagos</strong><span><i/></span></div></div><main key={route} className={route==='home'?'home-view':'page-view'}>
   {route==='home'?<Home go={go} open={open}/>:<InnerPage route={route} go={go} open={open}/>} 

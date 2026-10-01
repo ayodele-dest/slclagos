@@ -1,0 +1,11 @@
+{
+  "rewrites": [
+    { "source": "/watch", "destination": "/" },
+    { "source": "/visit", "destination": "/" },
+    { "source": "/events", "destination": "/" },
+    { "source": "/trybe", "destination": "/" },
+    { "source": "/groups", "destination": "/" },
+    { "source": "/connect", "destination": "/" },
+    { "source": "/give", "destination": "/" }
+  ]
+}
