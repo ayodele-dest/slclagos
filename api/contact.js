@@ -21,14 +21,17 @@ export default async function handler(request,response){
  }
 
  try{
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),12000);
   const upstream=await fetch(process.env.GOOGLE_APPS_SCRIPT_URL,{
-   method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow',
+   method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow',signal:controller.signal,
    body:JSON.stringify({...submission,secret:process.env.FORM_SHARED_SECRET})
   });
+  clearTimeout(timeout);
   const result=await upstream.json().catch(()=>({ok:false}));
   if(!upstream.ok||!result.ok)throw new Error('Delivery failed');
   return response.status(200).json({ok:true});
- }catch{
-  return response.status(502).json({error:'We could not send your message. Please try again shortly.'});
+ }catch(error){
+  return response.status(502).json({error:error.name==='AbortError'?'Email delivery timed out. Please try again.':'We could not send your message. Please try again shortly.'});
  }
 }

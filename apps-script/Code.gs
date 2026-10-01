@@ -3,6 +3,9 @@ const ALLOWED_REASONS = ['General enquiry', "I’m new here", 'I want to join a 
 
 function doPost(event) {
   try {
+    if (!event || !event.postData || !event.postData.contents) {
+      return jsonResponse({ok: false, error: 'Use the deployed web app URL; do not run doPost from the editor.'});
+    }
     const data = JSON.parse(event.postData.contents || '{}');
     const expectedSecret = PropertiesService.getScriptProperties().getProperty('FORM_SHARED_SECRET');
     if (!expectedSecret || data.secret !== expectedSecret) return jsonResponse({ok: false}, 403);

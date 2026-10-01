@@ -14,9 +14,15 @@ const Arrow=()=> <span className="arrow" aria-hidden="true">›</span>;
 
 async function sendContact(form,extra={}){
  const payload={...Object.fromEntries(new FormData(form).entries()),...extra};
- const response=await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
- const result=await response.json().catch(()=>({}));
- if(!response.ok)throw new Error(result.error||'We could not send your message. Please try again.');
+ const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),18000);
+ try{
+  const response=await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:controller.signal});
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(result.error||'We could not send your message. Please try again.');
+ }catch(error){
+  if(error.name==='AbortError')throw new Error('Sending took too long. Please check your connection and try again.');
+  throw error;
+ }finally{clearTimeout(timeout)}
 }
 
 function ContactSheet({open,onClose,initial='General enquiry'}){
