@@ -1,5 +1,5 @@
 const RECIPIENT = 'lagos@slchurchng.org';
-const ALLOWED_REASONS = ["I’m new here", 'I want to join a Trybe', 'I need prayer', 'I have a testimony', 'I want to serve', 'General enquiry'];
+const ALLOWED_REASONS = ['General enquiry', "I’m new here", 'I want to join a trybe', 'I want to join a connect group', 'I need prayer', 'I want to share a testimony', 'I want to be a member'];
 
 function doPost(event) {
   try {

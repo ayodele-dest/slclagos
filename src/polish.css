@@ -26,8 +26,8 @@
 .figma-home > section:nth-child(4), .figma-subpage > *:nth-child(4) { animation-delay: .15s; }
 .figma-home > section:nth-child(5), .figma-subpage > *:nth-child(5) { animation-delay: .2s; }
 
-.visual-link, .access-row, .service-card, .trybe-list article, .page-action, .fp-header button, .fp-intro > button, .service-card .locate-link { transition: transform .22s ease,border-color .22s ease,box-shadow .22s ease,background-color .22s ease; }
-.visual-link:hover, .access-row:hover, .trybe-list article:hover { transform: translateY(-3px); border-color: rgba(249,115,22,.65); box-shadow: 0 12px 28px rgba(0,0,0,.2); }
+.visual-link, .access-row, .service-card, .trybe-list article, .connect-groups-list article, .page-action, .fp-header button, .fp-intro > button, .service-card .locate-link { transition: transform .22s ease,border-color .22s ease,box-shadow .22s ease,background-color .22s ease; }
+.visual-link:hover, .access-row:hover, .trybe-list article:hover, .connect-groups-list article:hover { transform: translateY(-3px); border-color: rgba(249,115,22,.65); box-shadow: 0 12px 28px rgba(0,0,0,.2); }
 .page-action:hover, .fp-header button:hover, .fp-intro > button:hover, .service-card .locate-link:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(234,88,12,.22); }
 .visual-link:active, .access-row:active, .page-action:active, .fp-header button:active, .fp-intro > button:active, .service-card .locate-link:active { transform: scale(.985); }
 .visual-link > img { transition: transform .6s cubic-bezier(.2,.7,.2,1); }
@@ -53,6 +53,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .figma-home > section, .figma-subpage > *, .watch-link > i { animation:none!important; }
-  .visual-link, .access-row, .service-card, .trybe-list article, .page-action, .fp-header button, .fp-intro > button, .service-card .locate-link, .visual-link > img, .figma-social a, .fp-header > img, .figma-top-mark img { transition:none!important; }
+  .visual-link, .access-row, .service-card, .trybe-list article, .connect-groups-list article, .page-action, .fp-header button, .fp-intro > button, .service-card .locate-link, .visual-link > img, .figma-social a, .fp-header > img, .figma-top-mark img { transition:none!important; }
   .site-loader { display:none!important; }
 }
